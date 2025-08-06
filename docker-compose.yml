@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14
+    container_name: user-db
+    environment:
+      POSTGRES_DB: user_registration
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Password@123
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: user-registration-app
+    ports:
+      - "3030:3030"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/user_registration
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Password@123
+    restart: unless-stopped
+
+volumes:
+  pgdata:
